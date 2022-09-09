@@ -7,6 +7,15 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
     const api = new appSync.GraphqlApi(this, "MyApi", {
       name: "my-book-api",
       schema: appSync.Schema.fromAsset("graphql/schema.graphql"),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appSync.AuthorizationType.API_KEY,
+          apiKeyConfig: {
+            name: "My very own API key",
+            expires: cdk.Expiration.after(cdk.Duration.days(365)),
+          },
+        },
+      },
     });
   }
 }
