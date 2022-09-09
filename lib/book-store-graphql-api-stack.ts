@@ -28,14 +28,19 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
     });
 
-    const listBooksLambda = new lambda.Function(this, "listBooksHandler", {
+    const commonLambdaProps: Omit<lambda.FunctionProps, "handler"> = {
       code: lambda.Code.fromAsset("functions"),
       runtime: lambda.Runtime.NODEJS_14_X,
-      handler: "listBooks.handler",
+      architecture: lambda.Architecture.ARM_64,
       memorySize: 1024,
       environment: {
         BOOKS_TABLE: booksTable.tableName,
       },
+    };
+
+    const listBooksLambda = new lambda.Function(this, "listBooksHandler", {
+      handler: "listBooks.handler",
+      ...commonLambdaProps,
     });
 
     booksTable.grantReadData(listBooksLambda);
@@ -51,12 +56,8 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
     });
 
     const createBookLambda = new lambda.Function(this, "createBookHandler", {
-      code: lambda.Code.fromAsset("functions"),
-      runtime: lambda.Runtime.NODEJS_14_X,
       handler: "createBook.handler",
-      environment: {
-        BOOKS_TABLE: booksTable.tableName,
-      },
+      ...commonLambdaProps,
     });
 
     booksTable.grantReadWriteData(createBookLambda);
@@ -72,13 +73,8 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
     });
 
     const getBookByIdLambda = new lambda.Function(this, "getBookByIdsHandler", {
-      code: lambda.Code.fromAsset("functions"),
-      runtime: lambda.Runtime.NODEJS_14_X,
       handler: "getBookById.handler",
-      memorySize: 1024,
-      environment: {
-        BOOKS_TABLE: booksTable.tableName,
-      },
+      ...commonLambdaProps,
     });
 
     booksTable.grantReadData(getBookByIdLambda);
