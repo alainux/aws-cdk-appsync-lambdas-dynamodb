@@ -70,5 +70,27 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
       typeName: "Mutation",
       fieldName: "createBook",
     });
+
+    const getBookByIdLambda = new lambda.Function(this, "getBookByIdsHandler", {
+      code: lambda.Code.fromAsset("functions"),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: "getBookById.handler",
+      memorySize: 1024,
+      environment: {
+        BOOKS_TABLE: booksTable.tableName,
+      },
+    });
+
+    booksTable.grantReadData(getBookByIdLambda);
+
+    const getBookByIdDataSource = api.addLambdaDataSource(
+      "getBookByIdDataSource",
+      getBookByIdLambda
+    );
+
+    getBookByIdDataSource.createResolver({
+      typeName: "Query",
+      fieldName: "getBookById",
+    });
   }
 }

@@ -8,6 +8,7 @@ type Book {
 
 type Query {
   listBooks: [Book]
+  getBookById(bookId: ID!): Book
 }
 
 type Mutation {
