@@ -1,18 +1,34 @@
-export const handler = async () => {
-  return [
-    {
-      id: "abc-123",
-      title: "My awesome book",
-      completed: true,
-      rating: 10,
-      reviews: ["The best book ever written"],
-    },
-    {
-      id: "def-456",
-      title: "A terrible book",
-      completed: true,
-      rating: 2,
-      reviews: ["What did I just read?!"],
-    },
-  ];
+import type { AppSyncResolverHandler } from "aws-lambda";
+import { DynamoDB } from "aws-sdk";
+
+type Book = {
+  id: string;
+  title: string;
+  completed?: boolean;
+  rating?: number;
+  reviews?: string[];
+};
+
+const documentClient = new DynamoDB.DocumentClient();
+export const handler: AppSyncResolverHandler<
+  null,
+  Book[] | null
+> = async () => {
+  try {
+    if (!process.env.BOOKS_TABLE) {
+      console.log("Error: BOOKS_TABLE was not specified");
+      return null;
+    }
+
+    const data = await documentClient
+      .scan({
+        TableName: process.env.BOOKS_TABLE,
+      })
+      .promise();
+
+    return data.Items as Book[];
+  } catch (e) {
+    console.error("Whoops", e);
+    return null;
+  }
 };
