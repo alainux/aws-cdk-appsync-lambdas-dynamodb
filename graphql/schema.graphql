@@ -9,3 +9,12 @@ type Book {
 type Query {
   listBooks: [Book]
 }
+
+type Mutation {
+  createBook(book: BookInput!): Book
+}
+
+input BookInput {
+  id: ID!
+  title: String!
+}
