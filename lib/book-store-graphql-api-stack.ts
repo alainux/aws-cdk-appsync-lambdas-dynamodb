@@ -2,6 +2,8 @@ import * as cdk from "@aws-cdk/core";
 import * as appSync from "@aws-cdk/aws-appsync";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as dynamodb from "@aws-cdk/aws-dynamodb";
+import * as nodeJsLambda from "@aws-cdk/aws-lambda-nodejs";
+import * as path from "path";
 export class BookStoreGraphqlApiStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -91,6 +93,27 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
     getBookByIdDataSource.createResolver({
       typeName: "Query",
       fieldName: "getBookById",
+    });
+
+    const updateBookLambda = new nodeJsLambda.NodejsFunction(
+      this,
+      "updateBookHandler",
+      {
+        ...commonLambdaProps,
+        entry: path.join(__dirname, "../functions/updateBook.ts"),
+      }
+    );
+
+    booksTable.grantReadWriteData(updateBookLambda);
+
+    const updateBookDataSource = api.addLambdaDataSource(
+      "updateBookDataSource",
+      updateBookLambda
+    );
+
+    updateBookDataSource.createResolver({
+      typeName: "Mutation",
+      fieldName: "updateBook",
     });
   }
 }
