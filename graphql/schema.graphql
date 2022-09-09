@@ -27,3 +27,7 @@ input UpdateBookInput {
   completed: Boolean
   rating: Int
 }
+
+type Subscription {
+  onUpdateBook: Book @aws_subscribe(mutations: ["updateBook"])
+}
