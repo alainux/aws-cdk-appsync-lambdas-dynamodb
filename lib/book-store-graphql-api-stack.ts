@@ -18,6 +18,10 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
           },
         },
       },
+      logConfig: {
+        fieldLogLevel: appSync.FieldLogLevel.ALL,
+      },
+      xrayEnabled: true,
     });
 
     const booksTable = new dynamodb.Table(this, "BooksTable", {
