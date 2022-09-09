@@ -1,16 +1,12 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
-
+import * as cdk from "@aws-cdk/core";
+import * as appSync from "@aws-cdk/aws-appsync";
 export class BookStoreGraphqlApiStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'BookStoreGraphqlApiQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const api = new appSync.GraphqlApi(this, "MyApi", {
+      name: "my-book-api",
+      schema: appSync.Schema.fromAsset("graphql/schema.graphql"),
+    });
   }
 }
