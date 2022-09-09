@@ -32,6 +32,7 @@ export class BookStoreGraphqlApiStack extends cdk.Stack {
       code: lambda.Code.fromAsset("functions"),
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: "listBooks.handler",
+      memorySize: 1024,
       environment: {
         BOOKS_TABLE: booksTable.tableName,
       },
